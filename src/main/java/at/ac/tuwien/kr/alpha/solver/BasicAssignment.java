@@ -338,6 +338,10 @@ public class BasicAssignment implements Assignment {
 		}
 		final int previousPropagationLevel = decisionLevels.get(decisionLevel).size();
 		final Entry previous = new Entry(value, decisionLevel, previousPropagationLevel, impliedBy, null, atom, true);
+
+		if (decisionLevel == getDecisionLevel()) {
+			throw new RuntimeException("Recording MBT below TRUE where MBT has the same decision level as TRUE. Should not happen.");
+		}
 		decisionLevels.get(decisionLevel).add(previous);
 		assignmentsToProcess.add(previous); // Process MBT on lower decision level.
 		// Replace the current TRUE entry with one where previous is set correctly.
