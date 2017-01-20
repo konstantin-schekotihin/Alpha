@@ -30,11 +30,11 @@ import at.ac.tuwien.kr.alpha.grounder.NaiveGrounder;
 import at.ac.tuwien.kr.alpha.grounder.parser.ParsedProgram;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import org.antlr.v4.runtime.ANTLRFileStream;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
 
@@ -78,10 +78,20 @@ public class HanoiTowerTest extends AbstractSolverTests {
 		testHanoiTower(4);
 	}
 
+	@Test(timeout = 10000)
+	public void testSimple() throws IOException {
+		testHanoiTower("simple");
+	}
+
 	private void testHanoiTower(int instance) throws IOException {
-		InputStream programInputStream = Files.newInputStream(Paths.get("src", "test", "resources", "HanoiTower_Alpha.asp"));
-		InputStream instanceInputStream = Files.newInputStream(Paths.get("src", "test", "resources", "HanoiTower_instances", instance + ".asp"));
-		ParsedProgram parsedProgram = parseVisit(new SequenceInputStream(programInputStream, instanceInputStream));
+		testHanoiTower(String.valueOf(instance));
+	}
+
+	private void testHanoiTower(String instance) throws IOException {
+		ANTLRFileStream programInputStream = new ANTLRFileStream(Paths.get("src", "test", "resources", "HanoiTower_Alpha.asp").toString());
+		ANTLRFileStream instanceInputStream = new ANTLRFileStream(Paths.get("src", "test", "resources", "HanoiTower_instances", instance + ".asp").toString());
+		ParsedProgram parsedProgram = parseVisit(programInputStream);
+		parsedProgram.accumulate(parseVisit(instanceInputStream));
 		NaiveGrounder grounder = new NaiveGrounder(parsedProgram);
 		Solver solver = getInstance(grounder);
 		Optional<AnswerSet> answerSet = solver.stream().findFirst();
