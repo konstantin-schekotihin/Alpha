@@ -628,9 +628,6 @@ class BasicNoGoodStore implements NoGoodStore<ThriceTruth> {
 			propagateAssigned = false;
 
 			if (entry.isReassignAtLowerDecisionLevel()) {
-				if (entry.getDecisionLevel() == assignment.getDecisionLevel()) {
-					throw new RuntimeException("Assignment entry is for current decision level but marked as reassign at lower one. Should not happen.");
-				}
 				LOGGER.debug("Processing assignment for lower decision level (ensuring watches are correct), atom: {}={}", atom, value);
 				if (!ensureWatchInvariantAfterAssignAtLowerDL(atom, value)) {
 					return propagated | propagateAssigned;
