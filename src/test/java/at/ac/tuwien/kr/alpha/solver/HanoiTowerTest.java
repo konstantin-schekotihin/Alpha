@@ -25,9 +25,9 @@
  */
 package at.ac.tuwien.kr.alpha.solver;
 
-import at.ac.tuwien.kr.alpha.common.AnswerSet;
+import at.ac.tuwien.kr.alpha.common.*;
 import at.ac.tuwien.kr.alpha.grounder.NaiveGrounder;
-import at.ac.tuwien.kr.alpha.grounder.parser.ParsedProgram;
+import at.ac.tuwien.kr.alpha.grounder.parser.*;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.antlr.v4.runtime.ANTLRFileStream;
@@ -37,8 +37,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.SortedSet;
 
 import static at.ac.tuwien.kr.alpha.Main.parseVisit;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests {@link AbstractSolver} using some hanoi tower test cases (see https://en.wikipedia.org/wiki/Tower_of_Hanoi).
@@ -73,7 +75,7 @@ public class HanoiTowerTest extends AbstractSolverTests {
 		testHanoiTower(3);
 	}
 
-	@Test(timeout = 10000)
+	@Test // (timeout = 10000)
 	public void testInstance4() throws IOException {
 		testHanoiTower(4);
 	}
@@ -96,7 +98,39 @@ public class HanoiTowerTest extends AbstractSolverTests {
 		Solver solver = getInstance(grounder);
 		Optional<AnswerSet> answerSet = solver.stream().findFirst();
 		System.out.println(answerSet);
-		// TODO: check correctness of answer set
+		checkGoal(parsedProgram, answerSet.get());
+	}
+
+	/**
+	 * Conducts a very simple, non-comprehensive goal check (i.e. it may classify answer sets as correct that are actually wrong) by checking if for every goal/3
+	 * fact in the input there is a corresponding on/3 atom in the output.
+	 */
+	private void checkGoal(ParsedProgram parsedProgram, AnswerSet answerSet) {
+		Predicate ongoal = new BasicPredicate("ongoal", 2);
+		Predicate on = new BasicPredicate("on", 3);
+		int steps = getSteps(parsedProgram);
+		SortedSet<Atom> onInstancesInAnswerSet = answerSet.getPredicateInstances(on);
+		for (ParsedFact fact : parsedProgram.facts) {
+			ParsedAtom atom = fact.getFact();
+			if (atom.getPredicate().equals(ongoal.getPredicateName()) && atom.getArity() == ongoal.getArity()) {
+				Term expectedTop = ConstantTerm.getInstance(atom.getTerms().get(0).toString());
+				Term expectedBottom = ConstantTerm.getInstance(atom.getTerms().get(1).toString());
+				Term expectedSteps = ConstantTerm.getInstance(String.valueOf(steps));
+				Atom expectedAtom = new BasicAtom(on, expectedSteps, expectedBottom, expectedTop);
+				assertTrue("Answer set does not contain " + expectedAtom, onInstancesInAnswerSet.contains(expectedAtom));
+			}
+		}
+	}
+
+	private int getSteps(ParsedProgram parsedProgram) {
+		Predicate steps = new BasicPredicate("steps", 1);
+		for (ParsedFact fact : parsedProgram.facts) {
+			ParsedAtom atom = fact.getFact();
+			if (atom.getPredicate().equals(steps.getPredicateName()) && atom.getArity() == steps.getArity()) {
+				return Integer.valueOf(atom.getTerms().get(0).toTerm().toString());
+			}
+		}
+		throw new IllegalArgumentException("No steps atom found in input program.");
 	}
 
 }
