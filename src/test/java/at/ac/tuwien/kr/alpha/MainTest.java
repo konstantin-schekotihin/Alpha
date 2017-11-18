@@ -35,6 +35,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static at.ac.tuwien.kr.alpha.Main.main;
@@ -69,5 +72,12 @@ public class MainTest {
 		main(argv);
 		System.setOut(sysOut);
 		assertTrue(newOut.toString().contains("{ b, p(a) }"));
+	}
+
+	@Test
+	public void testBinPacking() throws URISyntaxException {
+		URL resource = MainTest.class.getClassLoader().getResource("binpacking/bin.lp");
+		main(new String[]{"-DebugEnableInternalChecks", "-sort", "-g", "naive", "-s", "default", "-n", "400",
+			"-i", Paths.get(resource.toURI()).toString()});
 	}
 }
