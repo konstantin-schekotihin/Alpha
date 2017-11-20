@@ -82,15 +82,6 @@ public class ParserTest {
 		assertEquals("Program contains three rules.", 3, parsedProgram.getRules().size());
 	}
 
-	@Test
-	public void parseHeuristicProgram() throws IOException {
-		Program parsedProgram = parser.parse("a :- b, _h(1), not d.\n" +
-			"c(X) :- p(X,a,_), q(Xaa,xaa)." +
-			":- f(Y).");
-
-		assertEquals("Program contains three rules.", 3, parsedProgram.getRules().size());
-	}
-
 	@Test(expected = IllegalArgumentException.class)
 	public void parseBadSyntax() throws IOException {
 		parser.parse("Wrong Syntax.");
@@ -146,5 +137,37 @@ public class ParserTest {
 		assertEquals("<", choiceHead.getLowerOp().toPredicate().getPredicateName());
 		assertEquals(ConstantTerm.getInstance(13), choiceHead.getUpperBound());
 		assertEquals("<=", choiceHead.getUpperOp().toPredicate().getPredicateName());
+	}
+
+	@Test
+	public void parseHeuristicProgram() throws IOException {
+		Program parsedProgram = parser.parse(
+			"a :- b, _h(1), not d.\n" +
+			"c(X) :- p(X,a,_), _h(X), q(Xaa,xaa)." +
+			":- f(Y).");
+
+		assertEquals("Program contains three rules.", 3, parsedProgram.getRules().size());
+		System.out.println(parsedProgram.getRules().toString());
+	}
+
+	@Test
+	public void parseIncorrectHeuristicProgram() throws IOException {
+		int faults = 0;
+		faults += parseFaultyRule("a :- b, _h(Y), not d.\n", 1);
+		faults += parseFaultyRule("c(X) :- p(X,a,_), _h(X,Xaa,Z), q(Xaa,xaa).", 1);
+		faults += parseFaultyRule(":- f(Y), _h(Y,X).", 1);
+
+		assertEquals("Three faults were expected", 3, faults);
+	}
+
+	private int parseFaultyRule(String program, int rules) {
+		try {
+			Program prg = parser.parse(program);
+			assertEquals(prg.getRules().size(), rules);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return 1;
+		}
+		return 0;
 	}
 }

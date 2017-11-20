@@ -32,6 +32,7 @@ import at.ac.tuwien.kr.alpha.common.DisjunctiveHead;
 import at.ac.tuwien.kr.alpha.common.Rule;
 import at.ac.tuwien.kr.alpha.common.atoms.Atom;
 import at.ac.tuwien.kr.alpha.common.atoms.ExternalAtom;
+import at.ac.tuwien.kr.alpha.common.atoms.HeuristicAtom;
 import at.ac.tuwien.kr.alpha.common.atoms.Literal;
 import at.ac.tuwien.kr.alpha.common.predicates.BuiltinBiPredicate;
 import at.ac.tuwien.kr.alpha.common.predicates.Predicate;
@@ -53,6 +54,7 @@ public class NonGroundRule {
 	private final List<Atom> bodyAtomsPositive;
 	private final List<Atom> bodyAtomsNegative;
 	private final Atom headAtom;
+	private final HeuristicAtom heuristic;
 
 	private final boolean containsIntervals;
 	private final boolean containsExternals;
@@ -70,7 +72,8 @@ public class NonGroundRule {
 		return isOriginallyGround;
 	}
 
-	private NonGroundRule(int ruleId, List<Atom> bodyAtomsPositive, List<Atom> bodyAtomsNegative, Atom headAtom, boolean containsIntervals, boolean containsExternals) {
+	private NonGroundRule(int ruleId, List<Atom> bodyAtomsPositive, List<Atom> bodyAtomsNegative, Atom headAtom,
+			      boolean containsIntervals, boolean containsExternals, HeuristicAtom heuristic) {
 		this.ruleId = ruleId;
 
 		this.isOriginallyGround = isOriginallyGround(bodyAtomsPositive, bodyAtomsNegative, headAtom);
@@ -86,6 +89,7 @@ public class NonGroundRule {
 		this.bodyAtomsNegative = Collections.unmodifiableList(bodyAtomsNegative);
 
 		this.headAtom = headAtom;
+		this.heuristic = heuristic;
 
 		checkSafety();
 	}
@@ -116,7 +120,8 @@ public class NonGroundRule {
 			}
 			headAtom = ((DisjunctiveHead)rule.getHead()).disjunctiveAtoms.get(0);
 		}
-		return new NonGroundRule(intIdGenerator.getNextId(), pos, neg, headAtom, containsIntervals, containsExternals);
+		return new NonGroundRule(intIdGenerator.getNextId(), pos, neg, headAtom, containsIntervals,
+			containsExternals, rule.getHeuristic());
 	}
 
 	private static boolean isOriginallyGround(List<Atom> bodyAtomsPositive, List<Atom> bodyAtomsNegative, Atom headAtom) {
@@ -357,6 +362,10 @@ public class NonGroundRule {
 		sb.append(".").append(System.lineSeparator());
 
 		return sb.toString();
+	}
+
+	public HeuristicAtom getHeuristic() {
+		return heuristic;
 	}
 
 	private class SortingBodyComponent {

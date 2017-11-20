@@ -68,9 +68,9 @@ public final class BranchingHeuristicFactory {
 		case NAIVE:
 			return new NaiveHeuristic(choiceManager);
 		case BERKMIN:
-			return new BerkMin(assignment, choiceManager, random);
+			return new BerkMin(assignment, choiceManager, random, grounder);
 		case BERKMINLITERAL:
-			return new BerkMinLiteral(assignment, choiceManager, random);
+			return new BerkMinLiteral(assignment, choiceManager, random, grounder);
 		case DD:
 			return new DependencyDrivenHeuristic(assignment, choiceManager, random, BodyActivityType.DEFAULT);
 		case DD_SUM:

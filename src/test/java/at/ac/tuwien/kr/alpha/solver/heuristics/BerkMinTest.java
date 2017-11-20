@@ -26,6 +26,7 @@
 package at.ac.tuwien.kr.alpha.solver.heuristics;
 
 import at.ac.tuwien.kr.alpha.common.NoGood;
+import at.ac.tuwien.kr.alpha.grounder.NaiveGrounder;
 import at.ac.tuwien.kr.alpha.solver.*;
 import at.ac.tuwien.kr.alpha.solver.learning.GroundConflictNoGoodLearner.ConflictAnalysisResult;
 import org.junit.Before;
@@ -59,7 +60,8 @@ public class BerkMinTest {
 		this.berkmin = new BerkMin(
 			assignment,
 			new PseudoChoiceManager(assignment, new NaiveNoGoodStore(assignment)),
-			new Random()
+			new Random(),
+			null
 		);
 	}
 	

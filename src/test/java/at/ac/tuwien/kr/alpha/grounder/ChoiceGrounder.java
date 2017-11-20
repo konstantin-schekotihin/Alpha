@@ -206,4 +206,9 @@ public class ChoiceGrounder implements Grounder {
 	public int getMaxAtomId() {
 		return 8;
 	}
+
+	@Override
+	public AtomStore getAtomStore() {
+		return null;
+	}
 }

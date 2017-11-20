@@ -76,6 +76,11 @@ public class IntervalAtom implements Literal {
 	}
 
 	@Override
+	public Type getType() {
+		return Type.INTERVAL_ATOM;
+	}
+
+	@Override
 	public boolean isNegated() {
 		// IntervalAtoms only occur positively.
 		return false;

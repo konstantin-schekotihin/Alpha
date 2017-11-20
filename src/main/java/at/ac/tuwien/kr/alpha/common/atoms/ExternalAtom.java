@@ -66,6 +66,11 @@ public class ExternalAtom implements Literal {
 	}
 
 	@Override
+	public Type getType() {
+		return Type.EXTERNAL_ATOM;
+	}
+
+	@Override
 	public boolean isNegated() {
 		return negated;
 	}

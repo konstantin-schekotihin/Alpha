@@ -49,7 +49,7 @@ public class MainTest {
 
 	@Parameters
 	public static Iterable<? extends String[][]> data() {
-		return Arrays.asList(new String[][][] {
+		return Arrays.asList(new String[][][]{
 			{{"-DebugEnableInternalChecks", "-g", "naive", "-s", "default", "-e", "1119654162577372", "-n", "20", "-str", INPUT}},
 			{{"-DebugEnableInternalChecks", "-g", "naive", "-s", "default", "-n", "0", "-str", INPUT}},
 			{{"-DebugEnableInternalChecks", "-g", "naive", "-s", "default", "-n", "1", "-str", INPUT}},
@@ -76,22 +76,8 @@ public class MainTest {
 
 	@Test
 	public void testBinPacking() throws URISyntaxException {
-		URL resource = MainTest.class.getClassLoader().getResource("binpacking/bin.lp");
+		URL resource = MainTest.class.getClassLoader().getResource("DomainHeuristics/bin.lp");
 		main(new String[]{"-DebugEnableInternalChecks", "-sort", "-g", "naive", "-s", "default", "-n", "400",
-			"-i", Paths.get(resource.toURI()).toString()});
-	}
-
-	@Test
-	public void testBinPacking() throws URISyntaxException {
-		URL resource = MainTest.class.getClassLoader().getResource("binpacking/bin.lp");
-		main(new String[]{"-DebugEnableInternalChecks", "-sort", "-g", "naive", "-s", "default", "-n", "400",
-			"-i", Paths.get(resource.toURI()).toString()});
-	}
-
-	@Test
-	public void testBinPacking() throws URISyntaxException {
-		URL resource = MainTest.class.getClassLoader().getResource("binpacking/bin.lp");
-		main(new String[]{"-DebugEnableInternalChecks", "-sort", "-g", "naive", "-s", "default", "-n", "400",
-			"-i", Paths.get(resource.toURI()).toString()});
+			"-b", "BerkMin","-i", Paths.get(resource.toURI()).toString()});
 	}
 }
