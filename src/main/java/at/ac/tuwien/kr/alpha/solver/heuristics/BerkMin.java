@@ -275,9 +275,10 @@ public class BerkMin implements BranchingHeuristic {
 			.filter(choiceManager::isActiveChoiceAtom).collect(Collectors.toSet());
 		int maxWeight = activeChoices.stream().map(p -> (Integer)(getTermValue(p,3)))
 			.max(Comparator.naturalOrder()).orElse(1);
-		return activeChoices.stream().max(Comparator.comparingDouble(p -> getActivity(p) +
-			getTermIntValue(p,2) + maxWeight*getTermIntValue(p,3)))
+		Integer atom = activeChoices.stream().max(Comparator.comparingDouble(p -> getActivity(p) +
+			getTermIntValue(p, 2) + maxWeight * getTermIntValue(p, 3)))
 			.orElse(DEFAULT_CHOICE_ATOM);
+		return atom;
 
 
 	}
