@@ -78,6 +78,6 @@ public class MainTest {
 	public void testBinPacking() throws URISyntaxException {
 		URL resource = MainTest.class.getClassLoader().getResource("DomainHeuristics/bin.lp");
 		main(new String[]{"-DebugEnableInternalChecks", "-sort", "-g", "naive", "-s", "default", "-n", "400",
-			"-b", "BerkMin","-i", Paths.get(resource.toURI()).toString()});
+			"-b", "Domain-BerkMin","-i", Paths.get(resource.toURI()).toString()});
 	}
 }

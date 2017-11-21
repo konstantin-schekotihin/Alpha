@@ -65,10 +65,24 @@ public class BerkMin implements BranchingHeuristic {
 	final Assignment assignment;
 	final ChoiceManager choiceManager;
 	final Random rand;
+
+	public Grounder getGrounder() {
+		return grounder;
+	}
+
 	private final Grounder grounder;
 
 	private Map<Integer, Double> activityCounters = new LinkedHashMap<>();
 	private Map<Integer, Integer> signCounters = new LinkedHashMap<>();
+
+	public Map<Integer, Double> getActivityCounters() {
+		return activityCounters;
+	}
+
+	public Deque<NoGood> getStackOfNoGoods() {
+		return stackOfNoGoods;
+	}
+
 	private Deque<NoGood> stackOfNoGoods = new ArrayDeque<>();
 	private int decayAge;
 	private double decayFactor;
@@ -260,7 +274,7 @@ public class BerkMin implements BranchingHeuristic {
 	 * @param noGood
 	 * @return
 	 */
-	private int getMostActiveChoosableAtom(NoGood noGood) {
+	protected int getMostActiveChoosableAtom(NoGood noGood) {
 		if (noGood != null) {
 			return getMostActiveChoosableAtom(noGood.stream().boxed());
 		} else {
@@ -273,26 +287,17 @@ public class BerkMin implements BranchingHeuristic {
 			.map(Literals::atomOf)
 			.filter(this::isUnassigned)
 			.filter(choiceManager::isActiveChoiceAtom).collect(Collectors.toSet());
-		int maxWeight = activeChoices.stream().map(p -> (Integer)(getTermValue(p,3)))
-			.max(Comparator.naturalOrder()).orElse(1);
-		Integer atom = activeChoices.stream().max(Comparator.comparingDouble(p -> getActivity(p) +
-			getTermIntValue(p, 2) + maxWeight * getTermIntValue(p, 3)))
+
+		return activeChoices.stream().max(Comparator.comparingDouble(this::getActivity))
 			.orElse(DEFAULT_CHOICE_ATOM);
-		return atom;
 
 
 	}
 
-	private Object getTermValue(int literal, int termIndex){
-		return ((ConstantTerm)this.grounder.getAtomStore().get(atomOf(literal)).getTerms()
-			.get(termIndex)).getObject();
-	}
 
-	private int getTermIntValue(int literal, int termIndex){
-		return (Integer)getTermValue(literal, termIndex);
-	}
 
-	private boolean isUnassigned(int atom) {
+
+	protected boolean isUnassigned(int atom) {
 		ThriceTruth truth = assignment.getTruth(atom);
 		return truth != FALSE && truth != TRUE; // do not use assignment.isAssigned(atom) because we may also choose MBTs
 	}

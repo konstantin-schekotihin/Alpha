@@ -144,3 +144,5 @@ gradle-app.setting
 /junit.log
 .idea/modules/*.iml
 *.tokens
+
+\.idea/
